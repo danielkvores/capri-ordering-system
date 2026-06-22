@@ -1,0 +1,130 @@
+{
+  "restaurant": {
+    "name": "Capri Pizzéria",
+    "timezone": "Europe/Budapest",
+    "opening_hours": {
+      "monday": ["11:00", "22:00"],
+      "tuesday": ["11:00", "22:00"],
+      "wednesday": ["11:00", "22:00"],
+      "thursday": ["11:00", "22:00"],
+      "friday": ["11:00", "23:00"],
+      "saturday": ["11:00", "23:00"],
+      "sunday": ["12:00", "21:00"]
+    }
+  },
+  "items": [
+    {
+      "id": "pizza_margherita",
+      "name_hu": "Margherita pizza",
+      "name_en": "Margherita pizza",
+      "aliases": ["margherita", "margaréta", "sajtos pizza", "paradicsomos sajtos pizza"],
+      "category": "pizza",
+      "base_price_huf": 2490,
+      "available": true,
+      "sizes": [
+        {"id": "32cm", "label": "32 cm", "price_huf": 2490},
+        {"id": "45cm", "label": "45 cm", "price_huf": 4490}
+      ],
+      "default_size": "32cm",
+      "ingredients": ["paradicsomszósz", "mozzarella", "bazsalikom"],
+      "allowed_extra_toppings": ["extra sajt", "sonka", "kukorica", "gomba", "olívabogyó", "jalapeno"],
+      "allergens": ["glutén", "tej"]
+    },
+    {
+      "id": "pizza_pepperoni",
+      "name_hu": "Pepperoni pizza",
+      "name_en": "Pepperoni pizza",
+      "aliases": ["pepperoni", "szalámis pizza", "pikáns szalámis pizza"],
+      "category": "pizza",
+      "base_price_huf": 2990,
+      "available": true,
+      "sizes": [
+        {"id": "32cm", "label": "32 cm", "price_huf": 2990},
+        {"id": "45cm", "label": "45 cm", "price_huf": 5290}
+      ],
+      "default_size": "32cm",
+      "ingredients": ["paradicsomszósz", "mozzarella", "pepperoni szalámi"],
+      "allowed_extra_toppings": ["extra sajt", "sonka", "kukorica", "gomba", "olívabogyó", "jalapeno"],
+      "allergens": ["glutén", "tej"]
+    },
+    {
+      "id": "pizza_prosciutto",
+      "name_hu": "Prosciutto pizza",
+      "name_en": "Prosciutto pizza",
+      "aliases": ["prosciutto", "sonkás pizza", "sonkas pizza"],
+      "category": "pizza",
+      "base_price_huf": 2890,
+      "available": true,
+      "sizes": [
+        {"id": "32cm", "label": "32 cm", "price_huf": 2890},
+        {"id": "45cm", "label": "45 cm", "price_huf": 5090}
+      ],
+      "default_size": "32cm",
+      "ingredients": ["paradicsomszósz", "mozzarella", "sonka"],
+      "allowed_extra_toppings": ["extra sajt", "kukorica", "gomba", "olívabogyó", "jalapeno"],
+      "allergens": ["glutén", "tej"]
+    },
+    {
+      "id": "pizza_quattro_formaggi",
+      "name_hu": "Quattro Formaggi pizza",
+      "name_en": "Quattro Formaggi pizza",
+      "aliases": ["quattro formaggi", "négy sajtos", "negysajtos", "négy sajtos pizza"],
+      "category": "pizza",
+      "base_price_huf": 3290,
+      "available": true,
+      "sizes": [
+        {"id": "32cm", "label": "32 cm", "price_huf": 3290},
+        {"id": "45cm", "label": "45 cm", "price_huf": 5690}
+      ],
+      "default_size": "32cm",
+      "ingredients": ["paradicsomszósz", "mozzarella", "gorgonzola", "parmezán", "füstölt sajt"],
+      "allowed_extra_toppings": ["extra sajt", "sonka", "kukorica", "gomba", "olívabogyó", "jalapeno"],
+      "allergens": ["glutén", "tej"]
+    },
+    {
+      "id": "pizza_vegetarian",
+      "name_hu": "Vegetáriánus pizza",
+      "name_en": "Vegetarian pizza",
+      "aliases": ["vegetáriánus", "vegetarianus", "vega pizza", "zöldséges pizza"],
+      "category": "pizza",
+      "base_price_huf": 3090,
+      "available": true,
+      "sizes": [
+        {"id": "32cm", "label": "32 cm", "price_huf": 3090},
+        {"id": "45cm", "label": "45 cm", "price_huf": 5390}
+      ],
+      "default_size": "32cm",
+      "ingredients": ["paradicsomszósz", "mozzarella", "gomba", "kukorica", "olívabogyó", "paprika"],
+      "allowed_extra_toppings": ["extra sajt", "sonka", "kukorica", "gomba", "olívabogyó", "jalapeno"],
+      "allergens": ["glutén", "tej"]
+    },
+    {
+      "id": "drink_coca_cola",
+      "name_hu": "Coca-Cola 0,5 l",
+      "name_en": "Coca-Cola 0.5 l",
+      "aliases": ["coca-cola", "cola", "kóla"],
+      "category": "drink",
+      "base_price_huf": 690,
+      "available": true,
+      "sizes": [],
+      "default_size": null,
+      "ingredients": [],
+      "allowed_extra_toppings": [],
+      "allergens": []
+    },
+    {
+      "id": "drink_mineral_water",
+      "name_hu": "Ásványvíz 0,5 l",
+      "name_en": "Mineral water 0.5 l",
+      "aliases": ["ásványvíz", "asvanyviz", "víz", "viz"],
+      "category": "drink",
+      "base_price_huf": 590,
+      "available": true,
+      "sizes": [],
+      "default_size": null,
+      "ingredients": [],
+      "allowed_extra_toppings": [],
+      "allergens": []
+    }
+  ]
+}

@@ -1,0 +1,31 @@
+[
+  {
+    "id": "cust_001",
+    "name": "Kovács Dániel",
+    "phone": "36701234567",
+    "addresses": [
+      {
+        "id": "addr_001",
+        "label": "Otthon",
+        "full_address": "1053 Budapest, Kossuth Lajos utca 10."
+      }
+    ]
+  },
+  {
+    "id": "cust_002",
+    "name": "Nagy Anna",
+    "phone": "36301230000",
+    "addresses": [
+      {
+        "id": "addr_002",
+        "label": "Lakás",
+        "full_address": "1137 Budapest, Pozsonyi út 18."
+      },
+      {
+        "id": "addr_003",
+        "label": "Iroda",
+        "full_address": "1051 Budapest, Nádor utca 5."
+      }
+    ]
+  }
+]
