@@ -12,7 +12,14 @@ from app.db import get_db, init_db
 from app.llm import build_provider
 from app.menu import load_menu
 from app.models import OrderLog, SessionRecord
-from app.order_engine import create_initial_state, hydrate_state, now_budapest, refresh_state, apply_llm_action
+from app.order_engine import (
+    apply_llm_action,
+    create_initial_state,
+    hydrate_state,
+    local_action_for_message,
+    now_budapest,
+    refresh_state,
+)
 from app.schemas import (
     ChatMessage,
     ConfirmResponse,
@@ -76,28 +83,42 @@ async def post_message(session_id: str, request: MessageRequest, db: Session = D
     messages = messages_from_record(record)
     state.last_user_message = request.text
 
-    try:
-        provider = build_provider(settings)
-        llm_result = await provider.extract_actions(request.text, state)
-        debug = DebugPayload(
-            llm_raw=llm_result.raw,
-            parsed_action=llm_result.action.model_dump(mode="json") if llm_result.action else None,
-            latency_ms=llm_result.latency_ms,
-            errors=llm_result.errors,
-        )
-    except Exception as exc:
+    local_action = local_action_for_message(request.text, state)
+    if local_action:
         llm_result = None
-        debug = DebugPayload(errors=[f"{type(exc).__name__}: {exc}"])
-
-    if llm_result is None or llm_result.action is None:
-        assistant_message = "Elnézést, nem tudtam biztonságosan feldolgozni az üzenetet. Kérem, ismételje meg rövidebben."
-        state.last_assistant_message = assistant_message
-        state = refresh_state(state)
-    else:
-        state, result = apply_llm_action(state, llm_result.action)
+        debug = DebugPayload(
+            llm_raw=None,
+            parsed_action=local_action.model_dump(mode="json"),
+            latency_ms=0,
+            errors=[],
+        )
+        state, result = apply_llm_action(state, local_action)
         assistant_message = result["assistant_message"]
         debug.validation = result["validation"]
-        debug.applied_changes = result["applied_changes"]
+        debug.applied_changes = ["local.phone_extract", *result["applied_changes"]]
+    else:
+        try:
+            provider = build_provider(settings)
+            llm_result = await provider.extract_actions(request.text, state)
+            debug = DebugPayload(
+                llm_raw=llm_result.raw,
+                parsed_action=llm_result.action.model_dump(mode="json") if llm_result.action else None,
+                latency_ms=llm_result.latency_ms,
+                errors=llm_result.errors,
+            )
+        except Exception as exc:
+            llm_result = None
+            debug = DebugPayload(errors=[f"{type(exc).__name__}: {exc}"])
+
+        if llm_result is None or llm_result.action is None:
+            assistant_message = assistant_message_for_llm_error(debug.errors)
+            state.last_assistant_message = assistant_message
+            state = refresh_state(state)
+        else:
+            state, result = apply_llm_action(state, llm_result.action)
+            assistant_message = result["assistant_message"]
+            debug.validation = result["validation"]
+            debug.applied_changes = result["applied_changes"]
 
     messages.append(ChatMessage(role="user", text=request.text, created_at=now_budapest()))
     messages.append(ChatMessage(role="assistant", text=assistant_message, created_at=now_budapest()))
@@ -213,3 +234,10 @@ def save_record(db: Session, record: SessionRecord, state: SessionState, message
 
 def dump_json(payload: Any) -> str:
     return json.dumps(payload, ensure_ascii=False, default=str)
+
+
+def assistant_message_for_llm_error(errors: list[str]) -> str:
+    joined = " ".join(errors).lower()
+    if "429" in joined or "too many requests" in joined:
+        return "A modell szolgáltató most túl sok kérést jelez. A telefonszámot helyben tudom kezelni, de a rendelési szöveget próbálja meg kicsit később."
+    return "Elnézést, nem tudtam biztonságosan feldolgozni az üzenetet. Kérem, ismételje meg rövidebben."

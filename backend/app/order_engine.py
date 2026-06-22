@@ -1,3 +1,4 @@
+import re
 from datetime import datetime
 from typing import Any
 from uuid import uuid4
@@ -228,6 +229,30 @@ def apply_llm_action(state: SessionState, action: LLMAction) -> tuple[SessionSta
     state.updated_at = now_budapest()
 
     return state, {"validation": validation, "applied_changes": applied_changes, "assistant_message": assistant_message}
+
+
+def local_action_for_message(user_text: str, state: SessionState) -> LLMAction | None:
+    phone = extract_phone_only(user_text)
+    if phone and "phone" in state.missing_fields:
+        return LLMAction(
+            reasoning_summary="Phone number extracted locally without LLM.",
+            confidence=1.0,
+            customer_updates={"phone": phone},
+            suggested_assistant_response_hu=None,
+        )
+    return None
+
+
+def extract_phone_only(user_text: str) -> str | None:
+    stripped = user_text.strip()
+    digits = normalize_phone(stripped)
+    if not digits or len(digits) < 8:
+        return None
+
+    leftover = re.sub(r"[\d\s+\-()/]", "", stripped)
+    if leftover:
+        return None
+    return digits
 
 
 def add_cart_item(
