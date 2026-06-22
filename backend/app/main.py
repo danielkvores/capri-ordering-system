@@ -261,4 +261,6 @@ def local_action_debug_label(reasoning_summary: str | None) -> str:
         return "local.fulfilment_extract"
     if "payment" in summary:
         return "local.payment_extract"
+    if "cart" in summary:
+        return "local.cart_extract"
     return "local.phone_extract"

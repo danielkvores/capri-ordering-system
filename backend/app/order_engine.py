@@ -263,6 +263,15 @@ def local_action_for_message(user_text: str, state: SessionState) -> LLMAction |
             suggested_assistant_response_hu=None,
         )
 
+    cart_action = extract_single_cart_action(user_text)
+    if cart_action and ("cart_items" in state.missing_fields or state.status in {"awaiting_items", "awaiting_payment_method"}):
+        return LLMAction(
+            reasoning_summary="Single cart item extracted locally without LLM.",
+            confidence=0.9,
+            cart_actions=[cart_action],
+            suggested_assistant_response_hu=None,
+        )
+
     return None
 
 
@@ -276,6 +285,67 @@ def extract_phone_only(user_text: str) -> str | None:
     if leftover:
         return None
     return digits
+
+
+def extract_single_cart_action(user_text: str) -> CartAction | None:
+    normalized = normalize_text(user_text)
+    candidates = [item for item in load_menu().items if menu_item_mentioned(item, normalized)]
+    if len(candidates) != 1:
+        return None
+
+    item = candidates[0]
+    return CartAction(
+        operation="add_item",
+        item_query=item.name_hu,
+        menu_item_id=item.id,
+        quantity=extract_quantity(normalized),
+        size=extract_size_from_text(normalized),
+        extra_toppings=extract_extra_toppings(item, normalized),
+        removed_ingredients=extract_removed_ingredients(item, normalized),
+        notes="",
+    )
+
+
+def menu_item_mentioned(item: MenuItem, normalized_text: str) -> bool:
+    searchable = [item.name_hu, item.name_en, *item.aliases]
+    return any(normalize_text(value) in normalized_text for value in searchable)
+
+
+def extract_quantity(normalized_text: str) -> int:
+    digit_match = re.search(r"\b([1-9]|1\d|20)\b", normalized_text)
+    if digit_match:
+        return int(digit_match.group(1))
+    for word, number in HUNGARIAN_NUMBERS.items():
+        if re.search(rf"\b{re.escape(normalize_text(word))}\b", normalized_text):
+            return number
+    return 1
+
+
+def extract_size_from_text(normalized_text: str) -> str | None:
+    if re.search(r"\b45\s*(cm|centis|centi|os)?\b", normalized_text):
+        return "45cm"
+    if re.search(r"\b32\s*(cm|centis|centi|es)?\b", normalized_text):
+        return "32cm"
+    return None
+
+
+def extract_extra_toppings(item: MenuItem, normalized_text: str) -> list[str]:
+    extras: list[str] = []
+    for topping in item.allowed_extra_toppings:
+        if normalize_text(topping) in normalized_text:
+            extras.append(topping)
+    return extras
+
+
+def extract_removed_ingredients(item: MenuItem, normalized_text: str) -> list[str]:
+    removed: list[str] = []
+    removal_markers = ("nelkul", "ne legyen", "hagyd le", "haggyuk le")
+    if not any(marker in normalized_text for marker in removal_markers):
+        return removed
+    for ingredient in item.ingredients:
+        if normalize_text(ingredient) in normalized_text:
+            removed.append(ingredient)
+    return removed
 
 
 def add_cart_item(
