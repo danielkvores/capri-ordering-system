@@ -53,6 +53,18 @@ def health() -> dict[str, str]:
     return {"status": "ok"}
 
 
+@app.get("/api/config")
+def config_status() -> dict[str, Any]:
+    return {
+        "llm_provider": settings.llm_provider,
+        "openrouter_model": settings.openrouter_model,
+        "openrouter_api_key_configured": bool(settings.openrouter_api_key),
+        "openrouter_api_key_length": len(settings.openrouter_api_key or ""),
+        "database_url": settings.database_url,
+        "cors_origins": settings.cors_origins,
+    }
+
+
 @app.post("/api/sessions", response_model=SessionResponse)
 def create_session(db: Session = Depends(get_db)) -> SessionResponse:
     session_id = str(uuid4())
