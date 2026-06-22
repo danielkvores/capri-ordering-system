@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import Any, Literal
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 
 OrderStatus = Literal[
@@ -142,6 +142,20 @@ class CartAction(BaseModel):
     extra_toppings: list[str] = Field(default_factory=list)
     removed_ingredients: list[str] = Field(default_factory=list)
     notes: str = ""
+
+    @field_validator("item_query", "menu_item_id", "size", "notes", mode="before")
+    @classmethod
+    def none_string_to_default(cls, value: Any, info: Any) -> Any:
+        if value is None and info.field_name == "notes":
+            return ""
+        return value
+
+    @field_validator("extra_toppings", "removed_ingredients", mode="before")
+    @classmethod
+    def none_list_to_default(cls, value: Any) -> Any:
+        if value is None:
+            return []
+        return value
 
 
 class Clarification(BaseModel):

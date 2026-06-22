@@ -64,7 +64,7 @@ class OpenRouterProvider:
             "Authorization": f"Bearer {self.settings.openrouter_api_key}",
             "Content-Type": "application/json",
             "HTTP-Referer": self.settings.openrouter_site_url,
-            "X-Title": self.settings.openrouter_app_name,
+            "X-OpenRouter-Title": self.settings.openrouter_app_name,
         }
         payload: dict[str, Any] = {
             "model": self.settings.openrouter_model,
@@ -74,7 +74,8 @@ class OpenRouterProvider:
         }
         async with httpx.AsyncClient(timeout=45.0) as client:
             response = await client.post("https://openrouter.ai/api/v1/chat/completions", headers=headers, json=payload)
-            response.raise_for_status()
+            if response.is_error:
+                raise RuntimeError(f"OpenRouter returned {response.status_code}: {response.text}")
             data = response.json()
             return data["choices"][0]["message"]["content"]
 

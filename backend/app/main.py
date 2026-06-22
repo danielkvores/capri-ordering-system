@@ -107,7 +107,7 @@ async def post_message(session_id: str, request: MessageRequest, db: Session = D
         state, result = apply_llm_action(state, local_action)
         assistant_message = result["assistant_message"]
         debug.validation = result["validation"]
-        debug.applied_changes = ["local.phone_extract", *result["applied_changes"]]
+        debug.applied_changes = [local_action_debug_label(local_action.reasoning_summary), *result["applied_changes"]]
     else:
         try:
             provider = build_provider(settings)
@@ -253,3 +253,12 @@ def assistant_message_for_llm_error(errors: list[str]) -> str:
     if "429" in joined or "too many requests" in joined:
         return "A modell szolgáltató most túl sok kérést jelez. A telefonszámot helyben tudom kezelni, de a rendelési szöveget próbálja meg kicsit később."
     return "Elnézést, nem tudtam biztonságosan feldolgozni az üzenetet. Kérem, ismételje meg rövidebben."
+
+
+def local_action_debug_label(reasoning_summary: str | None) -> str:
+    summary = (reasoning_summary or "").lower()
+    if "fulfilment" in summary:
+        return "local.fulfilment_extract"
+    if "payment" in summary:
+        return "local.payment_extract"
+    return "local.phone_extract"

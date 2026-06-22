@@ -240,6 +240,29 @@ def local_action_for_message(user_text: str, state: SessionState) -> LLMAction |
             customer_updates={"phone": phone},
             suggested_assistant_response_hu=None,
         )
+
+    fulfilment_type = normalize_fulfilment(user_text)
+    if fulfilment_type and (
+        "fulfilment_type" in state.missing_fields
+        or "delivery_address" in state.missing_fields
+        or "pickup_time" in state.missing_fields
+    ):
+        return LLMAction(
+            reasoning_summary="Fulfilment method extracted locally without LLM.",
+            confidence=1.0,
+            fulfilment_updates={"type": fulfilment_type},
+            suggested_assistant_response_hu=None,
+        )
+
+    payment_method = normalize_payment(user_text)
+    if payment_method and "payment_method" in state.missing_fields:
+        return LLMAction(
+            reasoning_summary="Payment method extracted locally without LLM.",
+            confidence=1.0,
+            payment_method=payment_method,
+            suggested_assistant_response_hu=None,
+        )
+
     return None
 
 
