@@ -27,17 +27,18 @@ pip install -e .
 cp ../.env.example .env
 ```
 
-Edit `backend/.env`:
+Edit `backend/.env` for Cerebras:
 
 ```env
 DATABASE_URL=sqlite:///./restaurant_orders.db
 BACKEND_CORS_ORIGINS=http://localhost:5173,http://127.0.0.1:5173
-LLM_PROVIDER=openrouter
-OPENROUTER_API_KEY=your-openrouter-api-key
-OPENROUTER_MODEL=your-openrouter-model-id
-OPENROUTER_SITE_URL=http://localhost:5173
-OPENROUTER_APP_NAME=Restaurant Ordering Prototype
+LLM_PROVIDER=cerebras
+CEREBRAS_API_KEY=your-cerebras-api-key
+CEREBRAS_MODEL=gpt-oss-120b
+CEREBRAS_BASE_URL=https://api.cerebras.ai/v1
 ```
+
+OpenRouter is still available as a fallback by setting `LLM_PROVIDER=openrouter` and adding `OPENROUTER_API_KEY` plus `OPENROUTER_MODEL`.
 
 Run the backend:
 

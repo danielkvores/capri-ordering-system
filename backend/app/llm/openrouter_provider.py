@@ -20,7 +20,7 @@ class OpenRouterProvider:
         started = time.perf_counter()
         errors: list[str] = []
 
-        if not self.settings.openrouter_api_key:
+        if not self.settings.openrouter_api_key_configured:
             return LLMResult(
                 raw=None,
                 action=None,

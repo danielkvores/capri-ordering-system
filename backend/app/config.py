@@ -20,11 +20,23 @@ class Settings(BaseSettings):
     openrouter_site_url: str = "http://localhost:5173"
     openrouter_app_name: str = Field(default="Restaurant Ordering Prototype")
 
+    cerebras_api_key: str | None = None
+    cerebras_model: str = "gpt-oss-120b"
+    cerebras_base_url: str = "https://api.cerebras.ai/v1"
+
     restaurant_timezone: str = "Europe/Budapest"
 
     @property
     def cors_origins(self) -> list[str]:
         return [origin.strip() for origin in self.backend_cors_origins.split(",") if origin.strip()]
+
+    @property
+    def cerebras_api_key_configured(self) -> bool:
+        return bool(self.cerebras_api_key and not self.cerebras_api_key.startswith("replace-with"))
+
+    @property
+    def openrouter_api_key_configured(self) -> bool:
+        return bool(self.openrouter_api_key and not self.openrouter_api_key.startswith("replace-with"))
 
 
 @lru_cache

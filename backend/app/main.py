@@ -58,8 +58,12 @@ def config_status() -> dict[str, Any]:
     return {
         "llm_provider": settings.llm_provider,
         "openrouter_model": settings.openrouter_model,
-        "openrouter_api_key_configured": bool(settings.openrouter_api_key),
+        "openrouter_api_key_configured": settings.openrouter_api_key_configured,
         "openrouter_api_key_length": len(settings.openrouter_api_key or ""),
+        "cerebras_model": settings.cerebras_model,
+        "cerebras_api_key_configured": settings.cerebras_api_key_configured,
+        "cerebras_api_key_length": len(settings.cerebras_api_key or ""),
+        "cerebras_base_url": settings.cerebras_base_url,
         "database_url": settings.database_url,
         "cors_origins": settings.cors_origins,
     }
